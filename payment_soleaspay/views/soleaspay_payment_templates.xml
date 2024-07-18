@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <template id="redirect_form">
+            <form t-att-action="api_url" method="post">
+                <input type="" name="apiKey" t-att-value="api_key"/>
+                <input type="" name="amount" t-att-value="amount"/>
+                <input type="" name="currency" t-att-value="currency"/>
+                <input type="" name="description" t-att-value="description"/>
+                <input type="" name="orderId" t-att-value="orderId"/>
+                <input type="" name="successUrl" t-att-value="successUrl"/>
+                <input type="" name="failureUrl" t-att-value="failureUrl"/>
+                <input type="" name="shopName" t-att-value="shopName"/>
+            </form>
+        </template>
+    </data>
+
+</odoo>

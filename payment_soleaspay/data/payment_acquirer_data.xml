@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="0">
+    <record id="payment_acquirer_pin" model="payment.acquirer">
+        <field name="name">Soleaspay</field>
+        <field name="provider">soleaspay</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="image_128" type="base64" file="payment_soleaspay/static/description/icon.png"/>
+        <field name="redirect_form_view_id" ref="redirect_form"/>
+        <field name="state">test</field>
+        <field name="pre_msg"><![CDATA[
+            <p>You will be redirected to the Soleaspay website after clicking on the payment button.</p>]]>
+        </field>
+        <field name="soleaspay_api_key">thR189ejRg8pXKK8Whp15yw</field>
+        <field name="description" type="html">
+            <p>A Soleaspay payment gateway to accept online payments via mobile money.</p>
+            <ul class="list-inline">
+                <li><i class="fa fa-check"/>Online Payment</li>
+                <li><i class="fa fa-check"/>Payment Status Tracking</li>
+            </ul>
+       </field>
+    </record>
+</odoo>
