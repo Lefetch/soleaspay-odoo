@@ -23,3 +23,9 @@ class PaymentAcquirer(models.Model):
     def _soleaspay_get_api_url(self):
         self.ensure_one()
         return self.soleaspay_endpoint
+
+    def _get_default_payment_method_id(self):
+        self.ensure_one()
+        if self.provider != 'soleaspay':
+            return super()._get_default_payment_method_id()
+        return self.env.ref('payment_soleaspay.payment_method_soleaspay').id

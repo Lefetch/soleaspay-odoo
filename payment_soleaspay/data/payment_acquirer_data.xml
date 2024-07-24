@@ -19,4 +19,10 @@
             </ul>
        </field>
     </record>
+
+    <record id="payment_method_soleaspay" model="account.payment.method">
+        <field name="name">Soleaspay</field>
+        <field name="code">soleaspay</field>
+        <field name="payment_type">inbound</field>
+    </record>
 </odoo>

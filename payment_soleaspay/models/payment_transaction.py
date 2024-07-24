@@ -30,7 +30,7 @@ class PaymentTransaction(models.Model):
             'api_key': self.acquirer_id.soleaspay_api_key,
             'amount': self.amount,
             'api_url': self.acquirer_id._soleaspay_get_api_url(),
-            'currency': self.currency_id.name,
+            'currency': self.company_id.currency_id.name,
             'orderId': self.reference,
             'description': self.partner_name,
             'shopName': self.company_id.name,
@@ -56,24 +56,19 @@ class PaymentTransaction(models.Model):
             return tx
 
         parsed_data = json.loads(data.get('soleaspay_data'))
-        if not parsed_data.get('success'):
+        if parsed_data.get('status') != 'SUCCESS':
             raise ValidationError(
                 "Soleaspay: " + parsed_data.get('message')
             )
 
-        if not parsed_data.get('data').get('ref'):
-            error_msg = (_('soleaspay: received data for reference %s;'
-                           'no order found') % (parsed_data.get('data').get('ref')))
-            raise ValidationError(error_msg)
-
-        reference = parsed_data.get('data').get('ref')
-        transaction = self.search([('reference', '=', reference), ('provider', '=', 'soleaspay')])
+        reference = parsed_data.get('orderId')
+        tx = self.search([('reference', '=', reference), ('provider', '=', 'soleaspay')])
         if not tx:
             raise ValidationError(
                 "Soleaspay: " + _("No transaction found matching reference %s.", reference)
             )
 
-        return transaction
+        return tx
 
     def _process_feedback_data(self, data):
         """ Override of payment to process the transaction based on Soleaspay data.
@@ -89,23 +84,23 @@ class PaymentTransaction(models.Model):
             return
 
         parsed_data = json.loads(data.get('soleaspay_data'))
-        transaction_keys = parsed_data.get('data')
-        if not transaction_keys:
+        # transaction_keys = parsed_data.get('data')
+        if not parsed_data:
             raise ValidationError("Soleaspay: " + _("Received data with missing transaction keys"))
 
         result = self.write({
-            'acquirer_reference': transaction_keys.get('ref'),
+            'acquirer_reference': parsed_data.get('ref'),
         })
 
-        status = bool(parsed_data.get('success'))
-        if status:
-            self._set_done(str(parsed_data.get('message')))
+        status = parsed_data.get('status')
+        if status == 'SUCCESS':
+            self._set_done()
             return True
-        elif not status:
-            if parsed_data.get('status') == 'FAILED':
-                self._set_error(str(parsed_data.get('message')))
-            else:
-                self._set_error(str(parsed_data.get('message')))
+        # elif not status:
+        #     if parsed_data.get('status') == 'FAILED':
+        #         self._set_error(str(parsed_data.get('message')))
+        #     else:
+        #         self._set_error(str(parsed_data.get('message')))
         else:
-            _logger.warning("Soleaspay: received unknown status")
-            self._set_error("Soleaspay: " + _("Unknown status code: %s"))
+            _logger.warning(f"Soleaspay: {parsed_data.get('message')}")
+            self._set_error(parsed_data.get('message'))

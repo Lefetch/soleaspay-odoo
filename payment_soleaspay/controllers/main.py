@@ -26,7 +26,6 @@ class SoleaspayController(http.Controller):
 
         :param dict data: The feedback data
         """
-        print("inside============================s")
         _logger.info("received notification data:\n%s", pprint.pformat(data))
         request.env['payment.transaction'].sudo()._handle_feedback_data('soleaspay', data)
         return request.redirect('/payment/status')
